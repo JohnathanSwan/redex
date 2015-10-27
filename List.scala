@@ -106,7 +106,14 @@ object List { // `List` companion object. Contains functions for creating and wo
   def leftLength[A](l:List[A]):Int = foldLeft(l, 0)((acc,_) => 1 + acc)
   def reverse[A](l:List[A]):List[A] = foldLeft(l, Nil:List[A])((acc:List[A],x) => Cons(x,acc))
   def ident[A](l:List[A]):List[A] = foldRight(l, Nil:List[A])((x,acc) => Cons(x,acc))
-  def leftAppend[A](a1:List[A], a2:List[A]):List[A] = foldRight(a1, a2)((x,acc) => Cons(x,acc))
+  def rightAppend[A](a1:List[A], a2:List[A]):List[A] = foldRight(a1, a2)((x,acc) => Cons(x,acc))
+  def leftAppend[A](a1:List[A], a2:List[A]):List[A] = foldLeft(reverse(a1), a2)((acc,x) => Cons(x,acc))
+  def listCat[A](l:List[List[A]]): List[A] = foldLeft(reverse(l),Nil:List[A])((acc,x) => leftAppend(x,acc))
 
-  def map[A,B](l: List[A])(f: A => B): List[B] = sys.error("todo")
+  def addOneToEach(l:List[Int]):List[Int] = foldLeft(reverse(l),Nil:List[Int])((acc,x) => Cons(x+1,acc))
+  def stringificate(l:List[Double]):List[String] = foldLeft(reverse(l),Nil:List[String])((acc,x) => Cons(x.toString(), acc))
+
+  def map[A,B](l: List[A])(f: A => B): List[B] = foldLeft(reverse(l),Nil:List[B])((acc,x) => Cons(f(x), acc))
+  def filter[A,B](l: List[A])(f: A => Boolean): List[A] = foldLeft(reverse(l),Nil:List[A])((acc,x) => if (f(x)) Cons(x, acc) else acc)
+  def flatMap[A,B](as:List[A])(f: A=> List[B]) : List[B] = listCat(map(as)(f))
 }
